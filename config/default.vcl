@@ -21,16 +21,6 @@ acl purge {
 
 # Respond to incoming requests.
 sub vcl_recv {
-    # Add an X-Forwarded-For header with the client IP address.
-    if (req.restarts == 0) {
-        if (req.http.X-Forwarded-For) {
-            set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
-        }
-        else {
-            set req.http.X-Forwarded-For = client.ip;
-        }
-    }
-
     if (req.method == "PURGEALL") {    
         if (("{{.VARNISH_PURGE_KEY}}" ~ "^\w{23,}\b") && (req.http.X-Purge-Key != "{{.VARNISH_PURGE_KEY}}")) {
             return (synth(405, "Not allowed. Invalid Purge Key Supplied"));
